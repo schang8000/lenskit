@@ -105,8 +105,16 @@ public final class ImmutableSparseVector extends SparseVector implements Seriali
                           Map<Symbol, ImmutableSparseVector> chanVectors,
                           Map<TypedSymbol<?>, Long2ObjectMap<?>> chans) {
         super(ks, vs);
-        channelVectors = ImmutableMap.copyOf(chanVectors);
-        channels = ImmutableMap.copyOf(chans);
+        if (chanVectors.isEmpty()) {
+            channelVectors = Collections.emptyMap();
+        } else {
+            channelVectors = ImmutableMap.copyOf(chanVectors);
+        }
+        if (chans.isEmpty()) {
+            channels = Collections.emptyMap();
+        } else {
+            channels = ImmutableMap.copyOf(chans);
+        }
     }
 
     @Override
@@ -174,7 +182,7 @@ public final class ImmutableSparseVector extends SparseVector implements Seriali
     }
 
     @Override
-    public ImmutableSparseVector combine(SparseVector o) {
+    public ImmutableSparseVector combineWith(SparseVector o) {
         LongSortedSet key = this.keyDomain();
         LongSortedSet newKey = o.keyDomain();
         MutableSparseVector result = MutableSparseVector.create(LongUtils.setUnion(key, newKey));
@@ -188,25 +196,28 @@ public final class ImmutableSparseVector extends SparseVector implements Seriali
     // so we can avoid computing them more than once.
     @Override
     public double norm() {
-        if (norm == null) {
-            norm = super.norm();
+        Double n = norm;
+        if (n == null) {
+            norm = n = super.norm();
         }
-        return norm;
+        return n;
     }
 
     @Override
     public double sum() {
-        if (sum == null) {
-            sum = super.sum();
+        Double s = sum;
+        if (s == null) {
+            sum = s = super.sum();
         }
-        return sum;
+        return s;
     }
 
     @Override
     public double mean() {
-        if (mean == null) {
-            mean = super.mean();
+        Double m = mean;
+        if (m == null) {
+            mean = m = super.mean();
         }
-        return mean;
+        return m;
     }
 }

@@ -29,7 +29,6 @@ import org.grouplens.lenskit.vectors.SparseVector;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.HashMap;
 
 /**
  * A simple cached item scorer that remembers the result for the last user id it scored.
@@ -60,12 +59,12 @@ public class SimpleCachingItemScorer extends AbstractItemScorer{
             if(!cachedItems.containsAll(reqItems)) {
                 LongSortedSet diffItems = LongUtils.setDifference(reqItems, cachedItems);
                 SparseVector newCache = scorer.score(user, diffItems);
-                cachedScores = cachedScores.combine(newCache);
+                cachedScores = cachedScores.combineWith(newCache);
             }
             scores.set(cachedScores);
         } else {
             scorer.score(user, scores);
-            cachedScores = scores.copy().freeze();
+            cachedScores = scores.immutable();
             cachedId = user;
         }
     }
